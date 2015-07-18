@@ -29,19 +29,34 @@ namespace mass_file_renamer
 
         private void addFile_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog addFileOpenDialog = new Microsoft.Win32.OpenFileDialog();
 
-            openFileDialog1.Filter = "Text Files (.txt)|*.txt|All Files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 1;
+            addFileOpenDialog.Filter = "Text Files (.txt)|*.txt|All Files (*.*)|*.*";
+            addFileOpenDialog.FilterIndex = 1;
 
-            openFileDialog1.Multiselect = true;
+            addFileOpenDialog.Multiselect = true;
 
-            bool? userClickedOk = openFileDialog1.ShowDialog();
+            bool? userClickedOk = addFileOpenDialog.ShowDialog();
 
             if (userClickedOk == true)
             {
-                //  tbResults.Text = openFileDialog1.FileName.ToString();
+                //  tbResults.Text = addFileOpenDialog.FileName.ToString();
             }
+        }
+
+        private void browseSave_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog browseSaveOpenDialog = new Microsoft.Win32.OpenFileDialog();
+
+            browseSaveOpenDialog.Filter = "Text Files (.txt)|*.txt|All Files (*.*)|*.*";
+            browseSaveOpenDialog.FilterIndex = 1;
+
+            bool? userClickedOk = browseSaveOpenDialog.ShowDialog();
+        }
+
+        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
     }
