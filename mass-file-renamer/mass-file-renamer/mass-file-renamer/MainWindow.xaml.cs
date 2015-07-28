@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-
+using System.IO;
+using System.Windows.Forms;
 
 namespace mass_file_renamer
 {
@@ -22,43 +22,151 @@ namespace mass_file_renamer
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();  
+        }     
+
+
+        // FILE ADDING
+
+        private void fileAddButton_Click(object sender, RoutedEventArgs e)
+        {
+            newFile();
         }
 
-        private void addFile_Click(object sender, RoutedEventArgs e)
+        public string newFile()
         {
             Microsoft.Win32.OpenFileDialog addFileOpenDialog = new Microsoft.Win32.OpenFileDialog();
-
-            addFileOpenDialog.Filter = "Text Files (.txt)|*.txt|All Files (*.*)|*.*";
+            addFileOpenDialog.Filter = "All Files (*.*)|*.*";
             addFileOpenDialog.FilterIndex = 1;
-
-            addFileOpenDialog.Multiselect = true;
-
+            // Show the FileOpen Dialog
             bool? userClickedOk = addFileOpenDialog.ShowDialog();
 
             if (userClickedOk == true)
             {
-                //  tbResults.Text = addFileOpenDialog.FileName.ToString();
+                testFilePath.Text = System.IO.Path.GetFullPath(addFileOpenDialog.FileName);
+                //testFilePath.Text = addFileOpenDialog.FileName.ToString();
+
+                testFileName.Text = System.IO.Path.GetFileName(addFileOpenDialog.FileName);
+
+                return addFileOpenDialog.FileName;
             }
+            else
+                return null;
         }
 
-        private void browseSave_Click(object sender, RoutedEventArgs e)
+        // FILE REMOVING
+
+        private void fileRemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog browseSaveOpenDialog = new Microsoft.Win32.OpenFileDialog();
-
-            browseSaveOpenDialog.Filter = "Text Files (.txt)|*.txt|All Files (*.*)|*.*";
-            browseSaveOpenDialog.FilterIndex = 1;
-
-            bool? userClickedOk = browseSaveOpenDialog.ShowDialog();
+            removeFile();     
         }
+
+        public string removeFile()
+        {
+            return null;
+        }
+
+        // FILE CLEAR \ RESET
+
+        private void fileClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            clearFile();
+        }
+
+        private void clearFile()
+        {
+            
+        }
+
+
+        // SAVE DIRECTORY SELECTION
+
+        private void saveDirectoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            saveLocation();                                
+        }
+
+        public string saveLocation()
+        {
+            FolderBrowserDialog browseSaveDialog = new FolderBrowserDialog();
+
+            browseSaveDialog.ShowNewFolderButton = true;
+            browseSaveDialog.ShowDialog();
+            savePathField.Text = browseSaveDialog.SelectedPath.ToString();
+            browseSaveDialog.SelectedPath = savePathField.Text.ToString();
+            
+            return System.IO.Path.GetFullPath(browseSaveDialog.SelectedPath);
+        }
+
+
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();        
         }
 
+
+
+        private static void CombineStrings(string pF, string pS)
+        {
+            string newFile = System.IO.Path.Combine(pF, pS);
+            // check if file exists, if it does rename 
+            if (File.Exists(newFile))
+            return;
+
+            //File.Move(pathFile)
+
+            
+        }
+
+        private void renameButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+      
+
+
+        // test function types?
+
+        /*
+        public string savePath()
+        {
+            FolderBrowserDialog browseSaveDialog = new FolderBrowserDialog();
+
+            browseSaveDialog.ShowNewFolderButton = true;
+            browseSaveDialog.ShowDialog();
+            savePathField.Text = browseSaveDialog.SelectedPath.ToString();
+            browseSaveDialog.SelectedPath = savePathField.Text.ToString();
+
+            string pathSave = browseSaveDialog.SelectedPath.ToString();
+
+            return pathSave;
+        }
+
+        private void renameButton_Click(object sender, RoutedEventArgs e)
+        {
+            CombineStrings(savePath(), newFile());
+            // I think I messed up this?
+        }
+
+        private static void CombineStrings(string pF, string pS)
+        {
+            string newFile = System.IO.Path.Combine(pF, pS);
+        }
+         */
+
     }
+        
 
 }
+
+// array or list to store files and paths
+
+
+/////// Different suppliers that can edited
+// ELECTECH LIMITED: " MER-A-ORDERNUMBER DC.file " " A13519-A-36692 1915.pdf "
+// ALLFAVOR: " poORDERNUMBER pn#MER-A(DC).file " "po0036585 pn#12152-A(1715).xls "
+// SUNTAK: " MER-A ORDERNUMBER QA Report.file " "A12607-A 0000036667 QA Report.xlsx "
