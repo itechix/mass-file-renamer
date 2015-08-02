@@ -39,19 +39,29 @@ namespace mass_file_renamer
         public string newFile()
         {
             Microsoft.Win32.OpenFileDialog addFileOpenDialog = new Microsoft.Win32.OpenFileDialog();
+            addFileOpenDialog.Title = "Select Files:";
             addFileOpenDialog.Filter = "All Files (*.*)|*.*";
             addFileOpenDialog.FilterIndex = 1;
+            addFileOpenDialog.Multiselect = true;
             // Show the FileOpen Dialog
             bool? userClickedOk = addFileOpenDialog.ShowDialog();
 
             if (userClickedOk == true)
             {
-                testFilePath.Text = System.IO.Path.GetFullPath(addFileOpenDialog.FileName);
-                //testFilePath.Text = addFileOpenDialog.FileName.ToString();
+                //testFilePath.Text = System.IO.Path.GetFullPath(addFileOpenDialog.FileName);
 
-                testFileName.Text = System.IO.Path.GetFileName(addFileOpenDialog.FileName);
+                //testFileName.Text = System.IO.Path.GetFileName(addFileOpenDialog.FileName);
 
-                return addFileOpenDialog.FileName;
+               
+
+                foreach (String file in addFileOpenDialog.FileNames)
+                {
+                    testFilePath.Text += file;
+                    Console.WriteLine(file);
+                }
+
+
+                return null;//addFileOpenDialog.FileName;
             }
             else
                 return null;
