@@ -38,8 +38,6 @@
                 <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Supplier:" VerticalAlignment="Top" Height="16" Width="53" Margin="0,2,196,0"/>
                 <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Add or remove files that you wish to rename from the list below:" VerticalAlignment="Top" Width="255" Margin="5,0,0,0"/>
                 <DataGrid x:Name="fileDataGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Height="282" Width="540" Margin="5,37" AutoGenerateColumns="False" d:IsHidden="True"/>
-                <TextBox x:Name="testFileName" HorizontalAlignment="Left" Height="26" Margin="21,140,0,0" TextWrapping="Wrap" Text="File Name" VerticalAlignment="Top" Width="136"/>
-                <TextBox x:Name="testFilePath" HorizontalAlignment="Left" Height="26" Margin="180,140,0,0" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="309"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="Saving" Header="Saving" HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Height="55" Grid.Row="2">
