@@ -41,9 +41,9 @@ namespace mass_file_renamer
 
         public struct reportFile
         {
-            public string fileName;
-            public string fileType;
-            public string filePath;
+            public string fileName { get; set; }
+            public string fileType { get; set; }
+            public string filePath { get; set; }
         }
 
         public string newFile()
@@ -68,9 +68,15 @@ namespace mass_file_renamer
                     // Leaving out fileType for now, maybe?
                     reports.Add(rFile);
                     Console.WriteLine();
+                    
                 }
 
             }
+            // Refresh the ItemsSource in the DataGrid.
+            this.fileDataGrid.ItemsSource = reports;
+
+            // Force the DataGrid to redraw it's elements.
+            this.fileDataGrid.Items.Refresh();
             
             return null;
         }
