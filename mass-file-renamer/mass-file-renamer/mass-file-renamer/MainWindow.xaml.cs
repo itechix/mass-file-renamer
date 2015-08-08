@@ -22,22 +22,17 @@ namespace mass_file_renamer
     /// </summary>
     public partial class MainWindow : Window
     {
-
+       List<reportFile> reports = new List<reportFile>();
         public MainWindow()
         {
             InitializeComponent();  
+
         }     
 
 
         // FILE ADDING
 
-        // File 
-
-
-        private void fileAddButton_Click(object sender, RoutedEventArgs e)
-        {
-            newFile();
-        }
+        // Struct Creation
 
         public struct reportFile
         {
@@ -46,16 +41,21 @@ namespace mass_file_renamer
             public string filePath { get; set; }
         }
 
-        public string newFile()
+        private void fileAddButton_Click(object sender, RoutedEventArgs e)
         {
-            List<reportFile> reports = new List<reportFile>();
+            newFile();
+        }
+
+        public void newFile()
+        {
+            
       
             Microsoft.Win32.OpenFileDialog addFileOpenDialog = new Microsoft.Win32.OpenFileDialog();
             addFileOpenDialog.Title = "Select Files:";
             addFileOpenDialog.Filter = "All Files (*.*)|*.*";
             addFileOpenDialog.FilterIndex = 1;
             addFileOpenDialog.Multiselect = true;
-            // Show the FileOpen Dialog
+            // Display the FileOpen Dialog
             bool? userClickedOk = addFileOpenDialog.ShowDialog();
 
             if (userClickedOk == true)
@@ -68,17 +68,13 @@ namespace mass_file_renamer
                     // Leaving out fileType for now, maybe?
                     reports.Add(rFile);
                     Console.WriteLine();
-                    
                 }
-
             }
             // Refresh the ItemsSource in the DataGrid.
             this.fileDataGrid.ItemsSource = reports;
 
             // Force the DataGrid to redraw it's elements.
             this.fileDataGrid.Items.Refresh();
-            
-            return null;
         }
 
         // FILE REMOVING
@@ -88,9 +84,9 @@ namespace mass_file_renamer
             removeFile();     
         }
 
-        public string removeFile()
+        public void removeFile()
         {
-            return null;
+
         }
 
         // FILE CLEAR \ RESET
@@ -102,7 +98,8 @@ namespace mass_file_renamer
 
         private void clearFile()
         {
-            
+            reports.Clear();
+            this.fileDataGrid.Items.Refresh();
         }
 
 
@@ -143,8 +140,11 @@ namespace mass_file_renamer
         private void renameButton_Click(object sender, RoutedEventArgs e)
         {
 
-        }
-      
+        }      
+
+
+
+        // adding more files overwrites original files in datagrid
 
 
         // test code, ignore for now?

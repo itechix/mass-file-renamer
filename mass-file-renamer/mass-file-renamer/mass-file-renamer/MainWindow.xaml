@@ -37,7 +37,7 @@
                 </ComboBox>
                 <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Supplier:" VerticalAlignment="Top" Height="16" Width="53" Margin="0,2,196,0"/>
                 <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Add or remove files that you wish to rename from the list below:" VerticalAlignment="Top" Width="255" Margin="5,0,0,0"/>
-                <DataGrid x:Name="fileDataGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Height="282" Width="540" Margin="5,37" AutoGenerateColumns="False" ItemsSource="{Binding reports}">
+                <DataGrid x:Name="fileDataGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Height="282" Width="540" Margin="5,37" AutoGenerateColumns="False" GridLinesVisibility="None" ItemsSource="{Binding reports}">
                     <DataGrid.Columns>
                         <DataGridTextColumn x:Name="cCol1" Binding="{Binding fileName}" Header="File Name"/>
                         <DataGridTextColumn x:Name="cCol2" Binding="{Binding fileType}" Header="Extension"/>
