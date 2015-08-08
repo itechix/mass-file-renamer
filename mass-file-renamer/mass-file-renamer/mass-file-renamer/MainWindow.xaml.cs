@@ -23,6 +23,8 @@ namespace mass_file_renamer
     public partial class MainWindow : Window
     {
        List<reportFile> reports = new List<reportFile>();
+
+
         public MainWindow()
         {
             InitializeComponent();  
@@ -33,7 +35,7 @@ namespace mass_file_renamer
         // FILE ADDING
 
         // Struct Creation
-
+        // reportFile is the type, struct is the construct
         public struct reportFile
         {
             public string fileName { get; set; }
@@ -64,7 +66,7 @@ namespace mass_file_renamer
                 {
                     reportFile rFile = new reportFile();
                     rFile.fileName = System.IO.Path.GetFileName(file);
-                    rFile.filePath = System.IO.Path.GetFullPath(file);
+                    rFile.filePath = System.IO.Path.GetDirectoryName(file);
                     // Leaving out fileType for now, maybe?
                     reports.Add(rFile);
                     Console.WriteLine();
@@ -77,6 +79,7 @@ namespace mass_file_renamer
             this.fileDataGrid.Items.Refresh();
         }
 
+
         // FILE REMOVING
 
         private void fileRemoveButton_Click(object sender, RoutedEventArgs e)
@@ -88,6 +91,7 @@ namespace mass_file_renamer
         {
 
         }
+
 
         // FILE CLEAR \ RESET
 
@@ -127,22 +131,38 @@ namespace mass_file_renamer
             System.Windows.Application.Current.Shutdown();        
         }
 
+
+        // RENAMING PROCESS
+
+        private void renameButton_Click(object sender, RoutedEventArgs e)
+        {
+            renameProcess();
+        }
+
+        private void renameProcess()
+        {
+            // Index number = supplier name (1 = Allfavor, 2 = Electech etc)
+            if(supplierName.SelectedIndex == 1)
+                foreach(reportFile file in reports)
+                {
+                    //file.fileName
+                    
+                }
+             /*if(supplierName.SelectedIndex == 2)
+             {
+
+             }*/
+        }
+
         private static void CombineStrings(string pF, string pS)
         {
             string newFile = System.IO.Path.Combine(pF, pS);
             // check if file exists, if it does rename 
             if (File.Exists(newFile))
-            return;
+                return;
 
             //File.Move(pathFile)
         }
-
-        private void renameButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }      
-
-
 
         // adding more files overwrites original files in datagrid
 
