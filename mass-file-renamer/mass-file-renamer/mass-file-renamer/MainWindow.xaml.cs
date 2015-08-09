@@ -23,7 +23,7 @@ namespace mass_file_renamer
     public partial class MainWindow : Window
     {
        List<reportFile> reports = new List<reportFile>();
-
+       public string rPrefix = "QA Rep ";
 
         public MainWindow()
         {
@@ -65,9 +65,10 @@ namespace mass_file_renamer
                 foreach (String file in addFileOpenDialog.FileNames)
                 {
                     reportFile rFile = new reportFile();
-                    rFile.fileName = System.IO.Path.GetFileName(file);
+                    rFile.fileName = System.IO.Path.GetFileNameWithoutExtension(file);
                     rFile.filePath = System.IO.Path.GetDirectoryName(file);
                     // Leaving out fileType for now, maybe?
+                    rFile.fileType = System.IO.Path.GetExtension(file);
                     reports.Add(rFile);
                     Console.WriteLine();
                 }
@@ -141,18 +142,44 @@ namespace mass_file_renamer
 
         private void renameProcess()
         {
-            // Index number = supplier name (1 = Allfavor, 2 = Electech etc)
-            if(supplierName.SelectedIndex == 1)
-                foreach(reportFile file in reports)
+            // Index number = supplier name (0 = Allfavor, 1 = Electech etc)
+            if (supplierName.SelectedIndex == 0)
+            {
+                // Loop through each of the reportFile types in reports to process them
+                foreach (reportFile file in reports)
                 {
-                    //file.fileName
-                    
+                    // Set rName to a ToUpper conversion of fileName, to avoid case-sensitive issues
+                    string rName = file.fileName.ToUpper();
+                    // Messy Replace, insert StringBuilder instead?
+                    rName = rName.Replace("PO#", "");
+                    rName = rName.Replace("PN#", "");
+                    Console.WriteLine(rName);
+
+                    int rEnd = rName.IndexOf("(");
+                    if (rEnd > 0)
+                        rName = rName.Substring(0, rEnd);
+                    Console.WriteLine(rName);
+
+                    string[] rSplit = rName.Split(' ');
+                    foreach (string r in rSplit)
+                    {
+                        Console.WriteLine(r);
+                    }
+                    //string newName = (rPrefix + file.fileType);
+
                 }
+            }
+            else
+                Console.WriteLine(supplierName.SelectedIndex);
+            // repeat for different formats / suppliers below
              /*if(supplierName.SelectedIndex == 2)
              {
 
              }*/
         }
+
+        // APPEND fileType on the end
+
 
         private static void CombineStrings(string pF, string pS)
         {
