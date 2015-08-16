@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace mass_file_renamer
 {
@@ -22,21 +23,22 @@ namespace mass_file_renamer
     /// </summary>
     public partial class MainWindow : Window
     {
-       List<reportFile> reports = new List<reportFile>();
+       List<ReportFile> reports = new List<ReportFile>();
        public string rPrefix = "QA Rep ";
+       public string saveDirectory = null;
 
         public MainWindow()
         {
-            InitializeComponent();  
-
+            InitializeComponent();
         }     
 
 
         // FILE ADDING
 
         // Struct Creation
+
         // reportFile is the type, struct is the construct
-        public struct reportFile
+        public struct ReportFile
         {
             public string fileName { get; set; }
             public string fileType { get; set; }
@@ -44,15 +46,13 @@ namespace mass_file_renamer
             public string fileFull { get; set; }
         }
 
-        private void fileAddButton_Click(object sender, RoutedEventArgs e)
+        private void FileAddButton_Click(object sender, RoutedEventArgs e)
         {
-            newFile();
+            NewFile();
         }
 
-        public void newFile()
+        public void NewFile()
         {
-            
-      
             Microsoft.Win32.OpenFileDialog addFileOpenDialog = new Microsoft.Win32.OpenFileDialog();
             addFileOpenDialog.Title = "Select Files:";
             addFileOpenDialog.Filter = "All Files (*.*)|*.*";
@@ -65,7 +65,7 @@ namespace mass_file_renamer
             {
                 foreach (String file in addFileOpenDialog.FileNames)
                 {
-                    reportFile rFile = new reportFile();
+                    ReportFile rFile = new ReportFile();
                     rFile.fileName = System.IO.Path.GetFileNameWithoutExtension(file);
                     rFile.filePath = System.IO.Path.GetDirectoryName(file);
                     // Leaving out fileType for now, maybe?
@@ -85,12 +85,12 @@ namespace mass_file_renamer
 
         // FILE REMOVING
 
-        private void fileRemoveButton_Click(object sender, RoutedEventArgs e)
+        private void FileRemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            removeFile();     
+            RemoveFile();     
         }
 
-        public void removeFile()
+        public void RemoveFile()
         {
 
         }
@@ -98,7 +98,7 @@ namespace mass_file_renamer
 
         // FILE CLEAR \ RESET
 
-        private void fileClearButton_Click(object sender, RoutedEventArgs e)
+        private void FileClearButton_Click(object sender, RoutedEventArgs e)
         {
             clearFile();
         }
@@ -112,12 +112,12 @@ namespace mass_file_renamer
 
         // SAVE DIRECTORY SELECTION
 
-        private void saveDirectoryButton_Click(object sender, RoutedEventArgs e)
+        private void SaveDirectoryButton_Click(object sender, RoutedEventArgs e)
         {
-            saveLocation();                                
+            SaveLocation();                                
         }
 
-        public string saveLocation()
+        private void SaveLocation()
         {
             FolderBrowserDialog browseSaveDialog = new FolderBrowserDialog();
 
@@ -126,10 +126,10 @@ namespace mass_file_renamer
             savePathField.Text = browseSaveDialog.SelectedPath.ToString();
             browseSaveDialog.SelectedPath = savePathField.Text.ToString();
             
-            return System.IO.Path.GetFullPath(browseSaveDialog.SelectedPath);
+            saveDirectory = System.IO.Path.GetFullPath(browseSaveDialog.SelectedPath);
         }
 
-        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Application.Current.Shutdown();        
         }
@@ -137,57 +137,70 @@ namespace mass_file_renamer
 
         // RENAMING PROCESS
 
-        private void renameButton_Click(object sender, RoutedEventArgs e)
+        private void RenameButton_Click(object sender, RoutedEventArgs e)
         {
-            renameProcess();
+            RenameProcess();
         }
 
-        private void renameProcess()
+        private void RenameProcess()
         {
-           
-            // Index number = supplier name (0 = Allfavor, 1 = Electech etc)
-            if (supplierName.SelectedIndex == 0)
+
+            switch(supplierName.SelectedIndex)
             {
-                
-                // Loop through each of the reportFile types in reports to process them
-                foreach (reportFile file in reports)
-                {
-                    // Set rName to a ToUpper conversion of fileName, to avoid case-sensitive issues
-                    string rName = file.fileName.ToUpper();
+                case 0:                        
+                    // Loop through each of the reportFile types in reports to process them
+                    foreach (ReportFile file in reports)
+                    {
+                        string[] rSplit = new string[2] { null, null };
 
-                    // Messy Replace, insert StringBuilder instead?
-                    rName = rName.Replace("PO#", "");
-                    rName = rName.Replace("PN#", "");
-                    Console.WriteLine(rName);
-                    
-                    // Get the index value of the first "(" in rName and assign the value to rEnd
-                    int rEnd = rName.IndexOf("(");
-                    // Check whether the index value is the first character or not
-                    if (rEnd > 0)
-                        // Take the characters from the first index value up until the bracket and replace the string with them
-                        rName = rName.Substring(0, rEnd);
-                    Console.WriteLine(rName);
+                        try
+                        {
+                            rSplit = S1FilenameCleaner(file.fileName);
+                        }
+                        catch(ArgumentException ex)
+                        {
+                            System.Windows.MessageBox.Show("Error processing file: " + file.fileFull + "\n" + ex.Message + "\n" + "No operation was performed.");
+                            Console.WriteLine(ex.Message);
 
-                    // Split each section of rName (separated by " ") and put it into an array
-                    string[] rSplit = rName.Split(' ');
-                    Array.Reverse(rSplit);
+                            break;
+                        }
 
-                    rName = (rPrefix + rSplit[0] + " " + rSplit[1] + file.fileType);
-                    Console.WriteLine(rName);
+                        // Set rName to a ToUpper conversion of fileName, to avoid case-sensitive issues
+                        string rName = (rPrefix + rSplit[0] + " " + rSplit[1] + file.fileType);
+                        Console.WriteLine(rName);
 
-                    CombineStrings(saveLocation(), rName, file.fileFull);
-                }
-                
+                        CombineStrings(saveDirectory, rName, file.fileFull);
+                        
+                    }
+                    break;
+
+                case 1:
+                    break;
+
+                case 2:
+                    break;
+
+                case 3:
+                    break;
             }
+               
+        }
 
-            else
-                Console.WriteLine(supplierName.SelectedIndex);
+        private string[] S1FilenameCleaner(string inputStr)
+        {
+            const string PN_PATTERN = @"PN#[a-z0-9-\ ]+[^PO#\(]";
+            const string PO_PATTERN = @"PO#[0-9]+";
 
-            // repeat for different formats / suppliers below
-             /*if(supplierName.SelectedIndex == 2)
-             {
+            Match pnMatch = Regex.Match(inputStr, PN_PATTERN, RegexOptions.IgnoreCase);
+            Match poMatch = Regex.Match(inputStr, PO_PATTERN, RegexOptions.IgnoreCase);
 
-             }*/
+            if (!pnMatch.Success || !poMatch.Success)
+                throw new ArgumentException("Filename was not in an expected format:" + "\n" + "Could not find valid PN or PO.");
+
+            string pn = pnMatch.Value.Replace(" ", "").Substring(3);
+            string po = poMatch.Value.Replace(" ", "").Substring(3);
+
+            return new string[2] { pn, po };
         }
 
         private static void CombineStrings(string fSave, string fName, string fFull)
@@ -199,8 +212,6 @@ namespace mass_file_renamer
 
             File.Move(fFull, newFile);
         }
-
-        // adding more files overwrites original files in datagrid
 
 
         // test code, ignore for now?
@@ -220,8 +231,6 @@ namespace mass_file_renamer
          */
 
     }
-        
-
 }
 
 /////// Different suppliers that will be implemented

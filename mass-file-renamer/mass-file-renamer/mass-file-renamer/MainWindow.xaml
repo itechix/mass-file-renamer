@@ -13,13 +13,12 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="592"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="renameButton" Content="Rename" Grid.Row="3" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="22" Margin="0,0,100,10" Click="renameButton_Click"/>
-        <ProgressBar Height="22" Width="397" Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+        <Button x:Name="renameButton" Content="Rename" Grid.Row="3" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="22" Margin="0,0,100,10" Click="RenameButton_Click"/>
         <GroupBox x:Name="Selection" Header="Selection&#xD;&#xA;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Height="394" Grid.Row="1">
             <Grid Width="550">
-                <Button x:Name="fileAddButton" Content="Add" HorizontalAlignment="Right" Width="75" Height="22" VerticalAlignment="Bottom" Margin="0,0,170,5" Click="fileAddButton_Click"/>
-                <Button x:Name="fileRemoveButton" Content="Remove" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="80" Height="22" Margin="0,0,85,5" Click= "fileRemoveButton_Click"/>
-                <Button x:Name="fileClearButton" Content="Clear" HorizontalAlignment="Right" Width="75" VerticalAlignment="Bottom" Height="22" Margin="0,0,5,5" Click="fileClearButton_Click"/>
+                <Button x:Name="fileAddButton" Content="Add" HorizontalAlignment="Right" Width="75" Height="22" VerticalAlignment="Bottom" Margin="0,0,170,5" Click="FileAddButton_Click"/>
+                <Button x:Name="fileRemoveButton" Content="Remove" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="80" Height="22" Margin="0,0,85,5" Click= "FileRemoveButton_Click"/>
+                <Button x:Name="fileClearButton" Content="Clear" HorizontalAlignment="Right" Width="75" VerticalAlignment="Bottom" Height="22" Margin="0,0,5,5" Click="FileClearButton_Click"/>
                 <ComboBox x:Name="supplierName" HorizontalAlignment="Left" VerticalAlignment="Top" Width="191" Margin="354,0,0,0" Height="22">
                     <ListBoxItem x:Name="sAllfavor" Content="Allfavor"/>
                     <ListBoxItem x:Name="sElectech" Content="United Electech Ltd"/>
@@ -50,10 +49,10 @@
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,-2,-3" Height="36" Width="550">
                 <TextBlock HorizontalAlignment="Left" Height="16" TextWrapping="Wrap" Width="66" VerticalAlignment="Center" Margin="0,8,0,12"><Run Text="Save files to"/><Run Text=":"/></TextBlock>
                 <TextBox x:Name="savePathField" Height="22" TextWrapping="Wrap" Text="C:\" VerticalAlignment="Center" HorizontalAlignment="Center" Width="354" Margin="0,0,44,0"/>
-                <Button x:Name="saveDirectoryButton" Content="Browse" Width="80" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,4,5,10" Click="saveDirectoryButton_Click"/>
+                <Button x:Name="saveDirectoryButton" Content="Browse" Width="80" Height="22" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,4,5,10" Click="SaveDirectoryButton_Click"/>
             </Grid>
         </GroupBox>
-        <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Bottom" Width="80" Height="22" Margin="0,0,15,10" Click="cancelButton_Click"/>
+        <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Bottom" Width="80" Height="22" Margin="0,0,15,10" Click="CancelButton_Click"/>
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="560" Margin="16,12,16,6"><Run Text="Select "/><Run Text="the supplier in the drop down menu and then "/><Run Text="choose"/><Run Text=" the files you wish to include in the renaming"/><Run Text=" process. Check your save location and change if necessary and then click &quot;Rename&quot; to begin the process"/><Run Text="."/></TextBlock>
 
     </Grid>
