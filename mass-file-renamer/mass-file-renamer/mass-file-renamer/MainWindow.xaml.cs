@@ -43,7 +43,8 @@ namespace mass_file_renamer
             public string fileName { get; set; }
             public string fileType { get; set; }
             public string filePath { get; set; }
-            public string fileFull { get; set; }
+            public string fileOld { get; set; }
+            public string fileNew { get; set; }
         }
 
         private void FileAddButton_Click(object sender, RoutedEventArgs e)
@@ -68,18 +69,18 @@ namespace mass_file_renamer
                     ReportFile rFile = new ReportFile();
                     rFile.fileName = System.IO.Path.GetFileNameWithoutExtension(file);
                     rFile.filePath = System.IO.Path.GetDirectoryName(file);
-                    // Leaving out fileType for now, maybe?
                     rFile.fileType = System.IO.Path.GetExtension(file);
-                    rFile.fileFull = System.IO.Path.GetFullPath(file);
+                    rFile.fileOld = System.IO.Path.GetFullPath(file);
+                    rFile.fileNew = S1FilenameCleaner(rFile.fileName, rFile.fileType);
                     reports.Add(rFile);
                     Console.WriteLine();
                 }
             }
             // Refresh the ItemsSource in the DataGrid.
-            this.fileDataGrid.ItemsSource = reports;
+            this.fileGridSelected.ItemsSource = reports;
 
             // Force the DataGrid to redraw it's elements.
-            this.fileDataGrid.Items.Refresh();
+            this.fileGridSelected.Items.Refresh();
         }
 
 
@@ -106,7 +107,7 @@ namespace mass_file_renamer
         private void clearFile()
         {
             reports.Clear();
-            this.fileDataGrid.Items.Refresh();
+            this.fileGridSelected.Items.Refresh();
         }
 
 
@@ -147,11 +148,12 @@ namespace mass_file_renamer
 
             switch(supplierName.SelectedIndex)
             {
+                // ALLFAVOUR
                 case 0:                        
                     // Loop through each of the reportFile types in reports to process them
                     foreach (ReportFile file in reports)
                     {
-                        string[] rSplit = new string[2] { null, null };
+                        /*string[] rSplit = new string[2] { null, null };
 
                         try
                         {
@@ -168,8 +170,8 @@ namespace mass_file_renamer
                         // Set rName to a ToUpper conversion of fileName, to avoid case-sensitive issues
                         string rName = (rPrefix + rSplit[0] + " " + rSplit[1] + file.fileType);
                         Console.WriteLine(rName);
-
-                        CombineStrings(saveDirectory, rName, file.fileFull);
+                        */
+                        CombineStrings(saveDirectory, file.fileNew, file.fileOld);
                         
                     }
                     break;
@@ -186,13 +188,15 @@ namespace mass_file_renamer
                
         }
 
-        private string[] S1FilenameCleaner(string inputStr)
+        private string S1FilenameCleaner(string fName, string fExt)
         {
             const string PN_PATTERN = @"PN#[a-z0-9-\ ]+[^PO#\(]";
             const string PO_PATTERN = @"PO#[0-9]+";
 
-            Match pnMatch = Regex.Match(inputStr, PN_PATTERN, RegexOptions.IgnoreCase);
-            Match poMatch = Regex.Match(inputStr, PO_PATTERN, RegexOptions.IgnoreCase);
+            string[] rSplit = new string[2] { null, null };
+
+            Match pnMatch = Regex.Match(fName, PN_PATTERN, RegexOptions.IgnoreCase);
+            Match poMatch = Regex.Match(fName, PO_PATTERN, RegexOptions.IgnoreCase);
 
             if (!pnMatch.Success || !poMatch.Success)
                 throw new ArgumentException("Filename was not in an expected format:" + "\n" + "Could not find valid PN or PO.");
@@ -200,7 +204,10 @@ namespace mass_file_renamer
             string pn = pnMatch.Value.Replace(" ", "").Substring(3);
             string po = poMatch.Value.Replace(" ", "").Substring(3);
 
-            return new string[2] { pn, po };
+            string rName = (rPrefix + pn + " " + po + fExt);
+
+            return rName;
+            //return new string[2] { pn, po };
         }
 
         private static void CombineStrings(string fSave, string fName, string fFull)
@@ -212,23 +219,6 @@ namespace mass_file_renamer
 
             File.Move(fFull, newFile);
         }
-
-
-        // test code, ignore for now?
-
-        /*
-
-        private void renameButton_Click(object sender, RoutedEventArgs e)
-        {
-            CombineStrings(savePath(), newFile());
-            // I think I messed up this?
-        }
-
-        private static void CombineStrings(string pF, string pS)
-        {
-            string newFile = System.IO.Path.Combine(pF, pS);
-        }
-         */
 
     }
 }
