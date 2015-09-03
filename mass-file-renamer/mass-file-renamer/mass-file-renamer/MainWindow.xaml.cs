@@ -49,7 +49,12 @@ namespace mass_file_renamer
 
         private void FileAddButton_Click(object sender, RoutedEventArgs e)
         {
-            NewFile();
+            if (supplierName.SelectedIndex == -1)
+            {
+                System.Windows.MessageBox.Show("Error:" + "\n" + "No supplier was selected." + "\n" + "Please select a supplier before continuing.");
+            }
+            else
+                NewFile();
         }
 
         public void NewFile()
@@ -71,7 +76,7 @@ namespace mass_file_renamer
                     rFile.filePath = System.IO.Path.GetDirectoryName(file);
                     rFile.fileType = System.IO.Path.GetExtension(file);
                     rFile.fileOld = System.IO.Path.GetFullPath(file);
-                    rFile.fileNew = S1FilenameCleaner(rFile.fileName, rFile.fileType);
+                    rFile.fileNew = CleanupProcess(rFile.fileName, rFile.fileType);
                     reports.Add(rFile);
                     Console.WriteLine();
                 }
@@ -126,7 +131,6 @@ namespace mass_file_renamer
             browseSaveDialog.ShowDialog();
             savePathField.Text = browseSaveDialog.SelectedPath.ToString();
             browseSaveDialog.SelectedPath = savePathField.Text.ToString();
-            
             saveDirectory = System.IO.Path.GetFullPath(browseSaveDialog.SelectedPath);
         }
 
@@ -138,62 +142,33 @@ namespace mass_file_renamer
 
         // RENAMING PROCESS
 
-        private void RenameButton_Click(object sender, RoutedEventArgs e)
-        {
-            RenameProcess();
-        }
 
-        private void RenameProcess()
+        private string CleanupProcess(string fName, string fExt)
         {
 
             switch(supplierName.SelectedIndex)
             {
                 // ALLFAVOUR
                 case 0:                        
-                    // Loop through each of the reportFile types in reports to process them
-                    foreach (ReportFile file in reports)
-                    {
-                        /*string[] rSplit = new string[2] { null, null };
-
-                        try
-                        {
-                            rSplit = S1FilenameCleaner(file.fileName);
-                        }
-                        catch(ArgumentException ex)
-                        {
-                            System.Windows.MessageBox.Show("Error processing file: " + file.fileFull + "\n" + ex.Message + "\n" + "No operation was performed.");
-                            Console.WriteLine(ex.Message);
-
-                            break;
-                        }
-
-                        // Set rName to a ToUpper conversion of fileName, to avoid case-sensitive issues
-                        string rName = (rPrefix + rSplit[0] + " " + rSplit[1] + file.fileType);
-                        Console.WriteLine(rName);
-                        */
-                        CombineStrings(saveDirectory, file.fileNew, file.fileOld);
-                        
-                    }
-                    break;
+                    return S1FilenameCleaner(fName, fExt); 
 
                 case 1:
-                    break;
+                    return S2FilenameCleaner(fName, fExt); 
 
                 case 2:
-                    break;
+                    return S3FilenameCleaner(fName, fExt); 
 
                 case 3:
-                    break;
+                    return S1FilenameCleaner(fName, fExt); 
             }
-               
+
+            return null;
         }
 
         private string S1FilenameCleaner(string fName, string fExt)
         {
             const string PN_PATTERN = @"PN#[a-z0-9-\ ]+[^PO#\(]";
             const string PO_PATTERN = @"PO#[0-9]+";
-
-            string[] rSplit = new string[2] { null, null };
 
             Match pnMatch = Regex.Match(fName, PN_PATTERN, RegexOptions.IgnoreCase);
             Match poMatch = Regex.Match(fName, PO_PATTERN, RegexOptions.IgnoreCase);
@@ -205,9 +180,36 @@ namespace mass_file_renamer
             string po = poMatch.Value.Replace(" ", "").Substring(3);
 
             string rName = (rPrefix + pn + " " + po + fExt);
-
             return rName;
-            //return new string[2] { pn, po };
+        }
+
+        // Suntak - A11356-A    0000037486  QA report
+        private string S2FilenameCleaner(string fName, string fExt)
+        {
+            string[] splitStr = fName.Split((char[])null, 3, StringSplitOptions.RemoveEmptyEntries);
+
+            splitStr[1] = splitStr[1].Substring(splitStr[1].IndexOf('3'));
+
+            string rName = (rPrefix + splitStr[0] + " " + splitStr[1] + fExt);
+            return rName;
+        }
+
+        // United Electech - 7358-B-37465-2915
+        private string S3FilenameCleaner(string fName, string fExt)
+        {
+            string[] splitStr = fName.Split(new[] { '-' } , 4, StringSplitOptions.RemoveEmptyEntries);
+
+            string rName = (rPrefix + splitStr[0] + "-" + splitStr[1] + " " + splitStr[2] + fExt);
+            return rName;
+        }
+
+        private void RenameButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Loop through each of the reportFile types in reports to process them
+            foreach (ReportFile file in reports)
+            {
+                CombineStrings(saveDirectory, file.fileNew, file.fileOld);
+            }
         }
 
         private static void CombineStrings(string fSave, string fName, string fFull)
