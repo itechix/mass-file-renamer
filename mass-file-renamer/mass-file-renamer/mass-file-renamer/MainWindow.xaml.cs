@@ -77,8 +77,13 @@ namespace mass_file_renamer
                     rFile.fileType = System.IO.Path.GetExtension(file);
                     rFile.fileOld = System.IO.Path.GetFullPath(file);
                     rFile.fileNew = CleanupProcess(rFile.fileName, rFile.fileType);
-                    reports.Add(rFile);
-                    Console.WriteLine();
+                    if(rFile.fileNew == null)
+                    {
+                        System.Windows.MessageBox.Show("Filename was not in an expected format:" + "\n" + "Could not find valid PN or PO.");
+                        return;
+                    }
+                    else
+                        reports.Add(rFile);
                 }
             }
             // Refresh the ItemsSource in the DataGrid.
@@ -98,7 +103,13 @@ namespace mass_file_renamer
 
         public void RemoveFile()
         {
-
+            if (fileGridSelected.Items.Count > 0)
+            {
+                reports.RemoveAt(fileGridSelected.SelectedIndex);
+                this.fileGridSelected.Items.Refresh();
+            }
+            else
+                return;
         }
 
 
@@ -126,7 +137,6 @@ namespace mass_file_renamer
         private void SaveLocation()
         {
             FolderBrowserDialog browseSaveDialog = new FolderBrowserDialog();
-
             browseSaveDialog.ShowNewFolderButton = true;
             browseSaveDialog.ShowDialog();
             savePathField.Text = browseSaveDialog.SelectedPath.ToString();
@@ -157,9 +167,6 @@ namespace mass_file_renamer
 
                 case 2:
                     return S3FilenameCleaner(fName, fExt); 
-
-                case 3:
-                    return S1FilenameCleaner(fName, fExt); 
             }
 
             return null;
@@ -169,16 +176,15 @@ namespace mass_file_renamer
         {
             const string PN_PATTERN = @"PN#[a-z0-9-\ ]+[^PO#\(]";
             const string PO_PATTERN = @"PO#[0-9]+";
-
             Match pnMatch = Regex.Match(fName, PN_PATTERN, RegexOptions.IgnoreCase);
             Match poMatch = Regex.Match(fName, PO_PATTERN, RegexOptions.IgnoreCase);
-
+            // If pnMatch and poMatch were not successful, perform the following lines
             if (!pnMatch.Success || !poMatch.Success)
-                throw new ArgumentException("Filename was not in an expected format:" + "\n" + "Could not find valid PN or PO.");
-
+            {
+                return null;
+            }
             string pn = pnMatch.Value.Replace(" ", "").Substring(3);
             string po = poMatch.Value.Replace(" ", "").Substring(3);
-
             string rName = (rPrefix + pn + " " + po + fExt);
             return rName;
         }
@@ -187,9 +193,7 @@ namespace mass_file_renamer
         private string S2FilenameCleaner(string fName, string fExt)
         {
             string[] splitStr = fName.Split((char[])null, 3, StringSplitOptions.RemoveEmptyEntries);
-
             splitStr[1] = splitStr[1].Substring(splitStr[1].IndexOf('3'));
-
             string rName = (rPrefix + splitStr[0] + " " + splitStr[1] + fExt);
             return rName;
         }
@@ -198,7 +202,6 @@ namespace mass_file_renamer
         private string S3FilenameCleaner(string fName, string fExt)
         {
             string[] splitStr = fName.Split(new[] { '-' } , 4, StringSplitOptions.RemoveEmptyEntries);
-
             string rName = (rPrefix + splitStr[0] + "-" + splitStr[1] + " " + splitStr[2] + fExt);
             return rName;
         }
@@ -225,8 +228,6 @@ namespace mass_file_renamer
     }
 }
 
-/////// Different suppliers that will be implemented
+// Suntak and Electech suppliers crash app when invalid files. - ADD CHECK SYSTEM
 
-// ELECTECH LIMITED: " MER-A-ORDERNUMBER DC.file " " A13519-A-36692 1915.pdf "
-// ALLFAVOR: " poORDERNUMBER pn#MER-A(DC).file " "po0036585 pn#12152-A(1715).xls "
-// SUNTAK: " MER-A ORDERNUMBER QA Report.file " "A12607-A 0000036667 QA Report.xlsx "
+// 

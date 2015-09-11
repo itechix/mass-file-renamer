@@ -44,6 +44,7 @@
         </GroupBox>
         <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Center" Width="80" Height="22" Click="CancelButton_Click" Margin="0,4,16,4"/>
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="560" Margin="16,12,16,6" Height="32"><Run Text="Select "/><Run Text="the supplier in the drop down menu and then "/><Run Text="choose"/><Run Text=" the files you wish to include in the renaming"/><Run Text=" process. Check your save location and change if necessary and then click &quot;Rename&quot; to begin the process"/><Run Text="."/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="16,7,0,-121" Grid.Row="3" TextWrapping="Wrap" Text="Designed by Christian Dalby" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
