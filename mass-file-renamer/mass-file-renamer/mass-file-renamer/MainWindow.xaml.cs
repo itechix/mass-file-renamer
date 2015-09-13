@@ -1,17 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
@@ -103,13 +92,29 @@ namespace mass_file_renamer
 
         public void RemoveFile()
         {
-            if (fileGridSelected.Items.Count > 0)
+            // Check if an item is actually selected, first.
+            if (fileGridSelected.SelectedIndex == -1)
             {
-                reports.RemoveAt(fileGridSelected.SelectedIndex);
-                this.fileGridSelected.Items.Refresh();
-            }
-            else
+                System.Windows.MessageBox.Show("Please select an item to remove.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+                
+            // This gets the ReportFile that is bound to that item in the list, and puts it in a variable.
+            // We know that it will be a ReportFile, the compiler doesn't, so we 'cast' it explicity.
+            ReportFile selectedReportFile = (ReportFile)fileGridSelected.SelectedValue;
+
+            // Now we get the index of the ReportFile bound to the item in the list. This is a search.
+            int remIndex = reports.IndexOf(selectedReportFile);
+
+            // Now we remove the report at the index we got
+            reports.RemoveAt(remIndex);
+
+            // Refresh the ItemsSource in the DataGrid.
+            this.fileGridSelected.ItemsSource = reports;
+
+            // Force the DataGrid to redraw it's elements.
+            this.fileGridSelected.Items.Refresh();
+            
         }
 
 
@@ -192,6 +197,14 @@ namespace mass_file_renamer
         // Suntak - A11356-A    0000037486  QA report
         private string S2FilenameCleaner(string fName, string fExt)
         {
+            const string FILECHECK = @"[a-z0-9\-\ ]+QA Report";
+            Match fileMatch = Regex.Match(fName, FILECHECK, RegexOptions.IgnoreCase);
+
+            if(!fileMatch.Success)
+            {
+                return null;
+            }
+
             string[] splitStr = fName.Split((char[])null, 3, StringSplitOptions.RemoveEmptyEntries);
             splitStr[1] = splitStr[1].Substring(splitStr[1].IndexOf('3'));
             string rName = (rPrefix + splitStr[0] + " " + splitStr[1] + fExt);
@@ -201,6 +214,14 @@ namespace mass_file_renamer
         // United Electech - 7358-B-37465-2915
         private string S3FilenameCleaner(string fName, string fExt)
         {
+            const string FILECHECK = @"[0-9]+\-[a-z]\-+[0-9]+\-[0-9]+";
+            Match fileMatch = Regex.Match(fName, FILECHECK, RegexOptions.IgnoreCase);
+
+            if (!fileMatch.Success)
+            {
+                return null;
+            }
+
             string[] splitStr = fName.Split(new[] { '-' } , 4, StringSplitOptions.RemoveEmptyEntries);
             string rName = (rPrefix + splitStr[0] + "-" + splitStr[1] + " " + splitStr[2] + fExt);
             return rName;
@@ -225,9 +246,12 @@ namespace mass_file_renamer
             File.Move(fFull, newFile);
         }
 
+        private void fileGridSelected_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Console.WriteLine("SIN: {0} RIN: {1}", fileGridSelected.SelectedIndex, reports.Count);
+        }
     }
 }
 
 // Suntak and Electech suppliers crash app when invalid files. - ADD CHECK SYSTEM
-
-// 
+//

@@ -26,7 +26,7 @@
                 </ComboBox>
                 <TextBlock HorizontalAlignment="Right" TextWrapping="Wrap" Text="Supplier:" VerticalAlignment="Top" Height="16" Width="53" Margin="0,2,196,0"/>
                 <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Add or remove files that you wish to rename from the list below:" VerticalAlignment="Top" Width="255" Margin="5,1,0,0"/>
-                <DataGrid x:Name="fileGridSelected" HorizontalAlignment="Center" VerticalAlignment="Center" Height="286" Width="534" AutoGenerateColumns="False" GridLinesVisibility="None" ItemsSource="{Binding reports}" Margin="8,38,8,32">
+                <DataGrid x:Name="fileGridSelected" HorizontalAlignment="Center" VerticalAlignment="Center" Height="286" Width="534" AutoGenerateColumns="False" GridLinesVisibility="None" ItemsSource="{Binding reports}" Margin="8,38,8,32" SelectionChanged="fileGridSelected_SelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn x:Name="selCol1" Binding="{Binding fileName}" Header="File Name" Width="225"/>
                         <DataGridTextColumn x:Name="selCol2" Binding="{Binding fileType}" Header="Extension" Width="84"/>
