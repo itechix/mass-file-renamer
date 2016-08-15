@@ -33,7 +33,7 @@ namespace mass_file_renamer
             public string fileType { get; set; }
             public string filePath { get; set; }
             public string fileOld { get; set; }
-            public string fileNew { get; set; }
+            public string fileNameNew { get; set; }
         }
 
         private void FileAddButton_Click(object sender, RoutedEventArgs e)
@@ -65,8 +65,8 @@ namespace mass_file_renamer
                     rFile.filePath = System.IO.Path.GetDirectoryName(file);
                     rFile.fileType = System.IO.Path.GetExtension(file);
                     rFile.fileOld = System.IO.Path.GetFullPath(file);
-                    rFile.fileNew = CleanupProcess(rFile.fileName, rFile.fileType);
-                    if(rFile.fileNew == null)
+                    rFile.fileNameNew = CleanupProcess(rFile.fileName);
+                    if(rFile.fileNameNew == null)
                     {
                         System.Windows.MessageBox.Show("Filename was not in an expected format:" + "\n" + "Could not find valid PN or PO.");
                         return;
@@ -158,44 +158,45 @@ namespace mass_file_renamer
         // RENAMING PROCESS
 
 
-        private string CleanupProcess(string fName, string fExt)
+        private string CleanupProcess(string fName)
         {
 
             switch(supplierName.SelectedIndex)
             {
                 // ALLFAVOUR
                 case 0:                        
-                    return S1FilenameCleaner(fName, fExt); 
+                    return S1AllfavorCleaner(fName); 
 
                 case 1:
-                    return S2FilenameCleaner(fName, fExt); 
+                    return S2SuntakCleaner(fName); 
 
                 case 2:
-                    return S3FilenameCleaner(fName, fExt); 
+                    return S3ElectechCleaner(fName); 
             }
 
             return null;
         }
 
-        private string S1FilenameCleaner(string fName, string fExt)
+        // Allfavor - po#40038 pn#A12819-A (1613 )
+        private string S1AllfavorCleaner(string fName)
         {
             const string PN_PATTERN = @"PN#[a-z0-9-\ ]+[^PO#\(]";
             const string PO_PATTERN = @"PO#[0-9]+";
             Match pnMatch = Regex.Match(fName, PN_PATTERN, RegexOptions.IgnoreCase);
             Match poMatch = Regex.Match(fName, PO_PATTERN, RegexOptions.IgnoreCase);
-            // If pnMatch and poMatch were not successful, perform the following lines
             if (!pnMatch.Success || !poMatch.Success)
             {
                 return null;
             }
             string pn = pnMatch.Value.Replace(" ", "").Substring(3);
             string po = poMatch.Value.Replace(" ", "").Substring(3);
-            string rName = (rPrefix + pn + " " + po + fExt);
+            string rName = (rPrefix + pn + " " + po);
+
             return rName;
         }
 
         // Suntak - A11356-A    0000037486  QA report
-        private string S2FilenameCleaner(string fName, string fExt)
+        private string S2SuntakCleaner(string fName)
         {
             const string FILECHECK = @"[a-z0-9\-\ ]+QA Report";
             Match fileMatch = Regex.Match(fName, FILECHECK, RegexOptions.IgnoreCase);
@@ -207,12 +208,12 @@ namespace mass_file_renamer
 
             string[] splitStr = fName.Split((char[])null, 3, StringSplitOptions.RemoveEmptyEntries);
             splitStr[1] = splitStr[1].Substring(splitStr[1].IndexOf('3'));
-            string rName = (rPrefix + splitStr[0] + " " + splitStr[1] + fExt);
+            string rName = (rPrefix + splitStr[0] + " " + splitStr[1]);
             return rName;
         }
 
-        // United Electech - 7358-B-37465-2915
-        private string S3FilenameCleaner(string fName, string fExt)
+        // United Electech - A10513-B-37407-2815
+        private string S3ElectechCleaner(string fName)
         {
             const string FILECHECK = @"[0-9]+\-[a-z]\-+[0-9]+\-[0-9]+";
             Match fileMatch = Regex.Match(fName, FILECHECK, RegexOptions.IgnoreCase);
@@ -223,27 +224,63 @@ namespace mass_file_renamer
             }
 
             string[] splitStr = fName.Split(new[] { '-' } , 4, StringSplitOptions.RemoveEmptyEntries);
-            string rName = (rPrefix + splitStr[0] + "-" + splitStr[1] + " " + splitStr[2] + fExt);
+            string rName = (rPrefix + splitStr[0] + "-" + splitStr[1] + " " + splitStr[2]);
             return rName;
         }
 
+
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+
+
         private void RenameButton_Click(object sender, RoutedEventArgs e)
         {
-            // Loop through each of the reportFile types in reports to process them
+            RenameProcess();
+        }
+
+        /**
+         *
+         */
+        private void RenameProcess()
+        {
+            // Loop through reports
             foreach (ReportFile file in reports)
             {
-                CombineStrings(saveDirectory, file.fileNew, file.fileOld);
+                string newFile = CombinedStrings(saveDirectory, file.fileNameNew, file.fileOld, file.fileType);
+
+                // Move the renamed file to the new location 
+                File.Move(file.fileOld, newFile); // new file already moved - FIX THIS
+
+
+                // TEST FOR EXISTING FILE
             }
         }
 
-        private static void CombineStrings(string fSave, string fName, string fFull)
+        /**
+         * Check the validity of the new file (in terms of location, name etc)
+         */
+        private static string CombinedStrings(string fSave, string fName, string fFull, string fExt)
         {
-            string newFile = System.IO.Path.Combine(fSave, fName);
-            // check if file exists, if it does rename 
-            if (File.Exists(newFile))
-                return;
+            string tempName = fName + fExt;
+            string tempFile = System.IO.Path.Combine(fSave, tempName);
+            // Check if file exists, if it does rename 
+            if (File.Exists(tempFile))
+            {
+                System.Diagnostics.Debug.WriteLine("file exists");
+                int dupeNum = 1;
+                while (File.Exists(tempFile))
+                {
+                    tempName = fName + dupeNum.ToString() + fExt;
+                    tempFile = System.IO.Path.Combine(fSave, tempName);
+                    System.Diagnostics.Debug.WriteLine(tempFile);
+                    dupeNum += 1;
+                }
+            }
+            
+            return tempFile;
 
-            File.Move(fFull, newFile);
+            // MAYBE RENAME newFile VARIABLE?
+            
         }
 
         private void fileGridSelected_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -253,5 +290,12 @@ namespace mass_file_renamer
     }
 }
 
-// Suntak and Electech suppliers crash app when invalid files. - ADD CHECK SYSTEM
-//
+// Errors
+//////////////////////////////////
+
+// Removing more than one file at a time causes it to crash.
+// Problem signature: Problem Event Name:	APPCRASH Application Name:	EXCEL.EXE Application Version: 15.0.4454.1503 Application Timestamp:	50b5c837 Fault Module Name:	EXCEL.EXE Fault Module Version:	15.0.4454.1503 Fault Module Timestamp: 50b5c837 Exception Code: c0000005 Exception Offset: 00000000000b11dc OS Version: 6.1.7601.2.1.0.768.3 Locale ID: 2057
+
+// TODO
+/////////////////////////////////
+// Add multiple files with same name to have additional characters added (A-Z) [1]
