@@ -29,7 +29,7 @@
                 <DataGrid x:Name="fileGridSelected" HorizontalAlignment="Center" VerticalAlignment="Center" Height="286" Width="534" AutoGenerateColumns="False" GridLinesVisibility="None" ItemsSource="{Binding reports}" Margin="8,38,8,32" SelectionChanged="fileGridSelected_SelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn x:Name="selCol1" Binding="{Binding fileName}" Header="File Name" Width="225"/>
-                        <DataGridTextColumn x:Name="selCol2" Binding="{Binding fileType}" Header="Extension" Width="84"/>
+                        <DataGridTextColumn x:Name="selCol2" Binding="{Binding fileType}" Header="Extension" Width="85"/>
                         <DataGridTextColumn x:Name="selCol3" Binding="{Binding fileNameNew}" Header="File Name Preview" Width="225"/>
                     </DataGrid.Columns>
                 </DataGrid>

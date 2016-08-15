@@ -291,7 +291,7 @@ namespace mass_file_renamer
 }
 
 // Errors
-//////////////////////////////////
+/////////////////////////////////
 
 // Removing more than one file at a time causes it to crash.
 // Problem signature: Problem Event Name:	APPCRASH Application Name:	EXCEL.EXE Application Version: 15.0.4454.1503 Application Timestamp:	50b5c837 Fault Module Name:	EXCEL.EXE Fault Module Version:	15.0.4454.1503 Fault Module Timestamp: 50b5c837 Exception Code: c0000005 Exception Offset: 00000000000b11dc OS Version: 6.1.7601.2.1.0.768.3 Locale ID: 2057
